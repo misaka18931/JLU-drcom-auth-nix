@@ -1,15 +1,16 @@
-{ pkgs ? import <nixpkgs> {},
+{ stdenv,
+  lib,
   fetchFromGitHub,
-  username? "",
-  passwd? "",
-  ipAddr? "",
-  macAddr? "",
+  username,
+  passwd,
+  ipAddr,
+  macAddr,
   hostname? "nixos",
   authIP? "10.100.61.3",
   authPort? "61440"
 }:
 
-pkgs.stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   name = pname;
   pname = "jlu-drcom-client";
 
@@ -29,11 +30,23 @@ pkgs.stdenv.mkDerivation rec {
     --replace-fail "xiaoming-linux" "${hostname}" \
     --replace-fail "5.10.0-amd64" "$(uname -r)" \
     --replace-fail "10.100.61.3" "${authIP}" \
-    --replace-fail "61440" "${authPort}" 
+    --replace-fail "61440" "${authPort}"
     make
   '';
   installPhase = ''
     mkdir -p $out/bin
     cp drclient_jlu $out/bin/${pname}
   '';
+
+  meta = with lib; {
+    description = "吉林大学校园网认证客户端(C语言版) ";
+    longDescription = ''
+      吉林大学校园网认证客户端(C语言版)
+      基于学校官方提供的Linux认证客户端编写，适用于支持POSIX标准的环境(Linux,BSD,Cygwin...)
+    '';
+    homepage = "https://github.com/AndrewLawrence80/jlu-drcom-client/tree/master";
+    # license = licenses.gpl3Plus;
+    maintainers = [ "misaka18931" ];
+    platforms = platforms.all;
+  };
 }
